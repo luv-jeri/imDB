@@ -1,6 +1,8 @@
 const User = require('../database/models/user.model');
 const catcher = require('../utils/catcher');
 const _Error = require('../utils/_error');
+const sendMail = require('../utils/mail');
+
 module.exports.join = catcher(async (req, res, next) => {
   const { name, email, password, confirmPassword, photo } = req.body;
 
@@ -46,5 +48,77 @@ module.exports.login = catcher(async (req, res, next) => {
       user,
       token,
     },
+  });
+});
+
+module.exports.send_reset_OTP = catcher(async (req, res, next) => {
+  const { email } = req.body;
+
+  const user = await User.findOne({ email });
+
+  if (!user) return next(new _Error('User not found Please check your email.', 404));
+
+  const OTP = user.setOTP();
+
+  await user.save({ validateBeforeSave: false });
+
+  const message = ` Hello,Your OTP is ${OTP} , it will expire in 10 minutes`;
+
+  await sendMail({
+    email,
+    subject: 'Reset Password OTP',
+    message,
+  });
+
+  res.status(200).json({
+    status: 'success',
+    message: 'OTP sent successfully',
+  });
+});
+
+module.exports.check_reset_OTP = catcher(async (req, res, next) => {
+  const { email, OTP } = req.body;
+
+  const user = await User.findOne({
+    email,
+    OTP,
+  });
+
+  if (!user) return next(new _Error('OTP is invalid', 404));
+
+  const resetToken = user.checkOTP(OTP);
+
+  if (!resetToken) return next(new _Error('OTP is invalid or Expired', 404));
+
+  await user.save({ validateBeforeSave: false });
+
+  res.status(200).json({
+    status: 'success',
+    message: 'OTP verified successfully',
+    content: {
+      resetToken,
+    },
+  });
+});
+
+module.exports.reset_password = catcher(async (req, res, next) => {
+  const { resetToken, password, confirmPassword } = req.body;
+
+  if (password !== confirmPassword)
+    return next(new _Error('Password and Confirm Password must be the same', 400));
+
+  const user = await User.findOne({
+    resetToken,
+  });
+
+  if (!user) return next(new _Error('Reset Token is invalid', 404));
+
+  user.resetPassword(password, confirmPassword);
+
+  await user.save();
+
+  res.status(200).json({
+    status: 'success',
+    message: 'Password reset successfully',
   });
 });

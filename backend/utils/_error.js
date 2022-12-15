@@ -4,7 +4,7 @@ class _Error extends Error {
     this.status = statusCode;
     this.isOperational = true;
 
-    Error.caputreStackTrace(this, this.constructor);
+    Error.captureStackTrace(this, this.constructor);
   }
 }
 
