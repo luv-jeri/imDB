@@ -2,8 +2,11 @@ const express = require('express');
 const error_handler = require('./utils/error_handler');
 const app = express();
 const cors = require('cors');
+var cookieParser = require('cookie-parser');
+const _Error = require('./utils/_error');
+const origin = ['http://localhost:3000'];
 
-const origin = ['http://localhost:3000/'];
+app.use(cookieParser());
 
 //* to add cookies if CORS
 app.use(
@@ -13,16 +16,16 @@ app.use(
   })
 );
 
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'http://456:3000');
-  res.header(
-    'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept'
-  );
-  res.header('Access-Control-Allow-Credentials', true);
+// app.use((req, res, next) => {
+//   res.header('Access-Control-Allow-Origin', 'http://456:3000');
+//   res.header(
+//     'Access-Control-Allow-Headers',
+//     'Origin, X-Requested-With, Content-Type, Accept'
+//   );
+//   res.header('Access-Control-Allow-Credentials', true);
 
-  next();
-});
+//   next();
+// });
 
 app.use(express.json());
 

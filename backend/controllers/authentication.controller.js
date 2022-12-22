@@ -33,13 +33,14 @@ module.exports.login = catcher(async (req, res, next) => {
 
   const user = await User.findOne({ email });
 
-  if (!user) return next(new _Error('User not found', 404));
+  if (!user)
+    return next(new _Error('No user found with this email, please sign up', 404));
 
   const isCorrectPassword = await user.correctPassword(password);
 
   if (!isCorrectPassword) return next(new _Error('Email or Password is incorrect', 401));
 
-  const token = user.generateToken();
+  const token = user.generateToken(res);
 
   res.status(200).json({
     status: 'success',
@@ -122,3 +123,6 @@ module.exports.reset_password = catcher(async (req, res, next) => {
     message: 'Password reset successfully',
   });
 });
+
+
+

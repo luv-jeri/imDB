@@ -17,9 +17,13 @@ UserSchema.methods.correctPassword = async function (user_password) {
   return await bcrypt.compare(user_password, this.password);
 };
 
-UserSchema.methods.generateToken = function () {
+UserSchema.methods.generateToken = function (res) {
   const token = jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
+  });
+
+  res.cookie('auth', token, {
+    httpOnly: true,
   });
 
   return token;
