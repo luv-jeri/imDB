@@ -17,7 +17,7 @@ router.route('/').get(getReviews);
 router
   .route('/:id')
   .get(getReview)
-  .put(updateReview)
+  .patch(updateReview)
   .delete(deleteReview)
   .post(addReview);
 

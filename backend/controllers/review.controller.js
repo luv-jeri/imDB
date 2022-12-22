@@ -20,6 +20,39 @@ module.exports.addReview = catcher(async (req, res, next) => {
 });
 
 module.exports.getReviews = catcher(async (req, res, next) => {});
-module.exports.getReview = catcher(async (req, res, next) => {});
-module.exports.updateReview = catcher(async (req, res, next) => {});
+module.exports.getReview = catcher(async (req, res, next) => {
+  const { id } = req.params;
+
+  const review = await Review.findById(id);
+
+  res.status(200).json({
+    status: 'success',
+    message: 'Review fetched successfully',
+    content: review,
+  });
+});
+
+module.exports.updateReview = catcher(async (req, res, next) => {
+  const { id } = req.params;
+  const { comment, rating } = req.body;
+
+  const review = await Review.findById(id);
+
+  if (!review) return next(new _Error('Review not found', 404));
+
+  if (review.user.toString() !== req.user.id)
+    return next(new _Error('You are not authorized to update this review', 401));
+
+  review.comment = comment;
+  review.rating = rating;
+
+  await review.save();
+
+  res.status(200).json({
+    status: 'success',
+    message: 'Review updated successfully',
+    content: review,
+  });
+});
+
 module.exports.deleteReview = catcher(async (req, res, next) => {});
