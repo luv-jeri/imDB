@@ -19,16 +19,18 @@ module.exports.addReview = catcher(async (req, res, next) => {
   });
 });
 
-module.exports.getReviews = catcher(async (req, res, next) => {});
-module.exports.getReview = catcher(async (req, res, next) => {
+module.exports.getReviews = catcher(async (req, res, next) => {
   const { id } = req.params;
+  const { page = 1, limit = 5 } = req.query;
 
-  const review = await Review.findById(id);
+  const reviews = await Review.find({ movie: id })
+    .limit(limit * 1)
+    .skip((page - 1) * limit);
 
   res.status(200).json({
     status: 'success',
-    message: 'Review fetched successfully',
-    content: review,
+    message: 'Reviews fetched successfully',
+    content: reviews,
   });
 });
 
@@ -55,4 +57,20 @@ module.exports.updateReview = catcher(async (req, res, next) => {
   });
 });
 
-module.exports.deleteReview = catcher(async (req, res, next) => {});
+module.exports.deleteReview = catcher(async (req, res, next) => {
+  const { id } = req.params;
+
+  const review = await Review.findById(id);
+
+  if (!review) return next(new _Error('Review not found', 404));
+
+  if (review.user.toString() !== req.user.id)
+    return next(new _Error('You are not authorized to delete this review', 401));
+
+  await review.remove();
+
+  res.status(204).json({
+    status: 'success',
+    message: 'Review deleted successfully',
+  });
+});

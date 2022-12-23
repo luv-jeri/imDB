@@ -10,14 +10,20 @@ const axios = require('axios');
 const URLS = require('./URL.data.js');
 
 const createUser = async () => {
-  const user = await User.create({
+  await User.create({
     name: 'Sanjay',
     email: 'xyz@gmail.com',
     password: '123',
     confirmPassword: '123',
   });
 
-  return user;
+  await User.create({
+    name: 'Admin',
+    email: 'admin@admin.com',
+    password: '123',
+    confirmPassword: '123',
+    role: 'admin',
+  });
 };
 
 const setMovies = async () => {
@@ -67,4 +73,9 @@ const setMovies = async () => {
   });
 };
 
-setMovies();
+try {
+  createUser();
+  setMovies();
+} catch (e) {
+  console.log(e);
+}

@@ -12,11 +12,9 @@ const router = express.Router();
 
 router.use(authorize);
 
-router.route('/').get(getReviews);
-
 router
   .route('/:id')
-  .get(getReview)
+  .get(getReviews)
   .patch(updateReview)
   .delete(deleteReview)
   .post(addReview);
