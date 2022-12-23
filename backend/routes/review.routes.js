@@ -2,7 +2,6 @@ const express = require('express');
 const {
   getReviews,
   addReview,
-  getReview,
   updateReview,
   deleteReview,
 } = require('../controllers/review.controller');

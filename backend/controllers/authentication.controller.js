@@ -124,5 +124,12 @@ module.exports.reset_password = catcher(async (req, res, next) => {
   });
 });
 
+module.exports.whoami = catcher(async (req, res, next) => {
+  const { user } = req;
 
-
+  res.status(200).json({
+    status: 'success',
+    message: 'User details',
+    content: user,
+  });
+});
