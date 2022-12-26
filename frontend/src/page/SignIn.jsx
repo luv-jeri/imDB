@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button, TextField, Stack, Paper } from '@mui/material';
 import '../styles/SignIn.css';
-import axios from 'axios';
+import { useAuth } from '../context/auth.context';
 
 export default function SignIn() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const { login } = useAuth();
 
   const handleEmailChange = (event) => {
     setEmail(event.target.value);
@@ -15,15 +16,6 @@ export default function SignIn() {
     setPassword(event.target.value);
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    const { data } = await axios.post('auth/login', {
-      email,
-      password,
-    });
-
-    console.log(data.content.token);
-  };
   return (
     <div>
       <Paper elevation={3} className='sign-in-container'>
@@ -45,7 +37,9 @@ export default function SignIn() {
             onChange={handlePasswordChange}
           />
           <Button
-            onClick={handleSubmit}
+            onClick={() => {
+              login(email, password);
+            }}
             id='sign-in-button'
             variant='contained'
             type='submit'

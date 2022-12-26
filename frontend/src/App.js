@@ -1,17 +1,12 @@
 import './App.css';
+import { useAuth } from './context/auth.context';
+import AuthRoute from './routes/Auth.route';
+import AppRoute from './routes/App.route';
 import { Routes, Route } from 'react-router-dom';
-import SignIn from './page/SignIn';
-import Home from './page/Home';
 
 function App() {
-  return (
-    <div className='App'>
-      <Routes>
-        <Route path='/login' element={<SignIn />} />
-        <Route path='/' element={<Home />} />
-      </Routes>
-    </div>
-  );
+  const { user } = useAuth();
+  return <>{user ? <AppRoute /> : <AuthRoute />}</>;
 }
 
 export default App;

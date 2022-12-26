@@ -124,12 +124,25 @@ module.exports.reset_password = catcher(async (req, res, next) => {
   });
 });
 
+module.exports.logout = catcher(async (req, res, next) => {
+  const { user } = req;
+
+  res.clearCookie('auth');
+
+  res.status(200).json({
+    status: 'success',
+    message: 'User logged out successfully',
+  });
+});
+
 module.exports.whoami = catcher(async (req, res, next) => {
   const { user } = req;
+
+  const user_ = await User.findById(user.id);
 
   res.status(200).json({
     status: 'success',
     message: 'User details',
-    content: user,
+    content: user_,
   });
 });

@@ -67,6 +67,11 @@ UserSchema.methods.resetPassword = async function (password, confirmPassword) {
   this.resetToken = null;
   this.resetTokenExpiresIn = null;
 };
+
+UserSchema.methods.logout = function (res) {
+  res.clearCookie('auth');
+}
+
 const UserModel = model('user', UserSchema);
 
 module.exports = UserModel;
